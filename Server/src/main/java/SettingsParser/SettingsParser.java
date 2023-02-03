@@ -1,6 +1,8 @@
 package SettingsParser;
 
-import Logger.Logger;
+import HistoryKeeper.HistoryKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,12 +12,14 @@ public class SettingsParser {
 
     private static final String PATH_TO_SETTINGS = "./src/main/resources/Settings.txt";
     private static SettingsParser instance;
-    private final Logger LOGGER;
+    private final Logger log;
+    private final HistoryKeeper historyKeeper;
     private int port=-1;
     private String host;
 
     private SettingsParser() {
-        LOGGER = Logger.getInstance();
+        historyKeeper = HistoryKeeper.getInstance();
+        log = LoggerFactory.getLogger(SettingsParser.class);
     }
 
     public static SettingsParser getInstance() {
@@ -43,9 +47,9 @@ public class SettingsParser {
 
             port = Integer.parseInt(properties.getProperty("port"));
             host = properties.getProperty("host");
-            LOGGER.writeToLog(String.format("%s загружен успешно, port: %d, host: %s", this.getClass().getSimpleName(), port, host));
+            historyKeeper.writeToHistory(String.format("%s загружен успешно, port: %d, host: %s", this.getClass().getSimpleName(), port, host));
         } catch (IOException e) {
-            LOGGER.writeToLog("Ошибка в конструкторе класса " + this.getClass().getSimpleName());
+            log.error("Ошибка в конструкторе класса {} {}" ,this.getClass().getSimpleName(), e.getMessage());
             e.printStackTrace();
         }
     }
